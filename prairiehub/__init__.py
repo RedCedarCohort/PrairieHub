@@ -1,7 +1,10 @@
 import json
 import requests
+import models
 
 from flask import Flask, Blueprint, g, request
+from flask.ext.superadmin import Admin, model
+
 from views.frontend import frontend
 from .extensions import db
 
@@ -38,6 +41,9 @@ def load_extensions(app):
     if app.debug and ('SECRET_KEY' in app.config):
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
+
+    admin = Admin(app, 'Prairie Huby Admin')
+    admin.register(models.users.User, session=db.session)
 
 
 def load_custom_template_filters(app):
