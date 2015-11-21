@@ -1,11 +1,12 @@
 import json
 import requests
 import models
+import views
 
 from flask import Flask, Blueprint, g, request
 from flask.ext.superadmin import Admin, model
-
-from views.frontend import frontend
+from flask.ext.login import LoginManager, current_user
+from views.auth import UserModel
 from .extensions import db
 
 
@@ -32,7 +33,8 @@ def create_app(config_file=None, config_path=None):
 
 
 def load_blueprints(app):
-    app.register_blueprint(frontend)
+    app.register_blueprint(views.frontend)
+    app.register_blueprint(views.auth)
 
 
 def load_extensions(app):
@@ -43,7 +45,16 @@ def load_extensions(app):
         DebugToolbarExtension(app)
 
     admin = Admin(app, 'Prairie Huby Admin')
-    admin.register(models.users.User, session=db.session)
+    admin.register(models.User, UserModel)
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    login_manager.login_view = 'auth.login'
+
+    @login_manager.user_loader
+    def load_user(id):
+        return models.User.query.get(int(id))
 
 
 def load_custom_template_filters(app):
@@ -83,5 +94,5 @@ def load_template_context_processors(app):
 # Add preprocessors to perform universal setup before a request is run
 def load_request_preprocessors(app):
     @app.before_request
-    def stub():
-        pass
+    def auth():
+        g.user = current_user

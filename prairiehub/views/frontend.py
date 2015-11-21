@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, g, redirect, url_for
-from ..models.users import User
+from flask.ext.login import login_required
+from ..models import User
 
 frontend = Blueprint('frontend', __name__)
 
 
 @frontend.route('/')
+@login_required
 def index():
-    return "Hello %s!" % User.query.first().first_name
+    return render_template('index.html')

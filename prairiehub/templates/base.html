@@ -1,0 +1,18 @@
+<html>
+    <head>
+    </head>
+    <body>
+        {% block body %}
+        {% endblock %}
+        <div class="nav-collapse collapse">
+            <ul class="nav">
+                {% if g.user and g.user.is_authenticated %}
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </body>
+</html>
