@@ -1,11 +1,8 @@
-from flask import Blueprint, render_template, g, redirect, url_for
-from flask.ext.login import login_required
-from ..models import User
+from flask import Blueprint, redirect, url_for
 
 frontend = Blueprint('frontend', __name__)
 
 
 @frontend.route('/')
-@login_required
 def index():
-    return render_template('index.html')
+    return redirect('/admin')
