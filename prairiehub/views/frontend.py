@@ -14,36 +14,22 @@ def index():
 def facebook_login(access_token):
     r = requests.get('https://graph.facebook.com/v2.5/me?fields=id&access_token=' + access_token)
     try:
-        user = User.query.filter_by(facebook_id=r.json()['id']).first()
-        ret = {
-            'id': user.id,
-            'pwd': '',
-            'email': user.email,
-        }
+        user_id = User.query.filter_by(facebook_id=r.json()['id']).first().id
     except:
-        ret = {
-            'id': None,
-            'pwd': None,
-            'email': None,
-        }
+        user_id = None
 
-    return jsonify(ret)
+    return jsonify({
+        'id': user_id
+    })
 
 
 @frontend.route('/login/custom/<email>/<password>')
 def custom_login(email, password):
     try:
-        user = User.query.filter_by(email=email, password=password).first()
-        ret = {
-            'id': user.id,
-            'pwd': '',
-            'email': user.email,
-        }
+        user_id = User.query.filter_by(email=email, password=password).first().id
     except:
-        ret = {
-            'id': None,
-            'pwd': None,
-            'email': None,
-        }
+        user_id = None
 
-    return jsonify(ret)
+    return jsonify({
+        'id': user_id
+    })
