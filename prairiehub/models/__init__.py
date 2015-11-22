@@ -70,3 +70,16 @@ class Testimonial(db.Model):
 
     def __repr__(self):
         return '<Testimonial %d|%r|%r|%d>' % (self.id, self.testimonial_text, self.endorser_name, self.tribe_id)
+
+
+class Press(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tribe_id = db.Column(db.Integer, db.ForeignKey('tribe.id'))
+    source_name = db.Column(db.String(128))
+    quote_text = db.Column(db.String(512))
+    url = db.Column(db.String(512))
+
+    tribe = db.relationship('Tribe', backref=db.backref('press', lazy='dynamic'))
+
+    def __repr__(self):
+        return '<Press %d|%d>' % (self.id, self.tribe_id)

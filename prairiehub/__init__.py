@@ -48,6 +48,7 @@ def load_admin(app):
     admin.register(models.User, session=db.session)
     admin.register(models.Tribe, session=db.session)
     admin.register(models.Photo, session=db.session)
+    admin.register(models.Press, session=db.session)
     admin.register(models.Testimonial, session=db.session)
 
 
@@ -57,9 +58,12 @@ def load_api(app):
     manager.create_api(models.User, methods=['GET'], exclude_columns=[
         'password', 'photos.owner', 'tribes.cost_in_pennies', 'tribes.facebook_app_id',
         'tribes.header_image_url', 'tribes.meetup_group_urlname', 'tribes.purpose',
-        'tribes.twitter_handle'])
+        'tribes.twitter_handle', 'tribes.registered_on', 'tribes.website_url',
+        'tribes.youtube_channel_name', 'featured_video_embed_url'])
 
-    manager.create_api(models.Tribe, methods=['GET', 'POST'], exclude_columns=['members.password', 'members.registered_on'])
+    manager.create_api(models.Tribe, methods=['GET', 'POST', 'PUT'], exclude_columns=[
+        'members.password', 'members.registered_on', 'photos.tribe_id', 'press.tribe_id'])
 
-    manager.create_api(models.Photo, methods=['GET', 'POST', 'DELETE'], exclude_columns=['tribe'])
-    manager.create_api(models.Testimonial, methods=['GET', 'POST', 'DELETE'], exclude_columns=['tribe'])
+    manager.create_api(models.Photo, methods=['GET', 'POST', 'PUT', 'DELETE'], exclude_columns=['tribe'])
+    manager.create_api(models.Press, methods=['GET', 'POST', 'PUT', 'DELETE'], exclude_columns=['tribe'])
+    manager.create_api(models.Testimonial, methods=['GET', 'POST', 'PUT', 'DELETE'], exclude_columns=['tribe'])
