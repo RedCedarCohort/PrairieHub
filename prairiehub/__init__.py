@@ -34,7 +34,11 @@ def create_app(config_file=None, config_path=None):
     admin = Admin(app, 'Prairie Hub Admin')
     admin.register(models.User, session=db.session)
 
-    manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
-    manager.create_api(models.User, methods=['GET', 'POST', 'DELETE'], exclude_columns=['password'])
+    load_api(app)
 
     return app
+
+
+def load_api(app):
+    manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
+    manager.create_api(models.User, methods=['GET', 'POST', 'DELETE'], exclude_columns=['password'])
