@@ -31,14 +31,19 @@ def create_app(config_file=None, config_path=None):
         from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
 
-    admin = Admin(app, 'Prairie Hub Admin')
-    admin.register(models.User, session=db.session)
-
+    load_admin(app)
     load_api(app)
 
     return app
 
 
+def load_admin(app):
+    admin = Admin(app, 'Prairie Hub Admin')
+    admin.register(models.User, session=db.session)
+    admin.register(models.Tribe, session=db.session)
+
+
 def load_api(app):
     manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
-    manager.create_api(models.User, methods=['GET', 'POST', 'DELETE'], exclude_columns=['password'])
+    manager.create_api(models.User, methods=['GET'], exclude_columns=['password'])
+    manager.create_api(models.Tribe, methods=['GET', 'POST'])
