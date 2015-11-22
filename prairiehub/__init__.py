@@ -34,6 +34,12 @@ def create_app(config_file=None, config_path=None):
     load_admin(app)
     load_api(app)
 
+    @app.after_request
+    def post_processor(response):
+        response.headers['Access-Control-Allow-Origin'] = 'http://localhost'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
+
     return app
 
 
@@ -41,9 +47,19 @@ def load_admin(app):
     admin = Admin(app, 'Prairie Hub Admin')
     admin.register(models.User, session=db.session)
     admin.register(models.Tribe, session=db.session)
+    admin.register(models.Photo, session=db.session)
+    admin.register(models.Testimonial, session=db.session)
 
 
 def load_api(app):
     manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
-    manager.create_api(models.User, methods=['GET'], exclude_columns=['password'])
-    manager.create_api(models.Tribe, methods=['GET', 'POST'])
+
+    manager.create_api(models.User, methods=['GET'], exclude_columns=[
+        'password', 'photos.owner', 'tribes.cost_in_pennies', 'tribes.facebook_app_id',
+        'tribes.header_image_url', 'tribes.meetup_group_urlname', 'tribes.purpose',
+        'tribes.twitter_handle'])
+
+    manager.create_api(models.Tribe, methods=['GET', 'POST'], exclude_columns=['members.password', 'members.registered_on'])
+
+    manager.create_api(models.Photo, methods=['GET', 'POST', 'DELETE'], exclude_columns=['tribe'])
+    manager.create_api(models.Testimonial, methods=['GET', 'POST', 'DELETE'], exclude_columns=['tribe'])

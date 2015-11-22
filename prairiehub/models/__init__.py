@@ -4,6 +4,11 @@ from flask import current_app
 from ..extensions import db
 
 
+user_tribes = db.Table('user_tribes',
+                       db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+                       db.Column('tribe_id', db.Integer, db.ForeignKey('tribe.id')))
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), unique=True, index=True)
@@ -11,36 +16,57 @@ class User(db.Model):
     password = db.Column(db.String(16))
     registered_on = db.Column(db.DateTime)
 
-    def __init__(self, email='', password='', facebook_id=''):
-        self.facebook_id = facebook_id
-        self.password = password
-        self.email = email
+    tribes = db.relationship('Tribe', secondary=user_tribes,
+                             backref=db.backref('members', lazy='dynamic'))
+
+    def __init__(self):
         self.registered_on = datetime.utcnow()
 
     def __repr__(self):
-        return '<User %r>' % self.email
+        return '<User %d|%r>' % (self.id, self.email)
 
 
 class Tribe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     logo_url = db.Column(db.String(512))
+    header_image_url = db.Column(db.String(512))
+    featured_video_embed_url = db.Column(db.String(512))
     purpose = db.Column(db.String(2048))
+    website_url = db.Column(db.String(512))
+    youtube_channel_name = db.Column(db.String(32))
     meetup_group_urlname = db.Column(db.String(32))
     facebook_app_id = db.Column(db.String(64))
     twitter_handle = db.Column(db.String(64))
+    cost_in_pennies = db.Column(db.Integer)
     registered_on = db.Column(db.DateTime)
 
-    def __init__(self, name='', logo_url='', purpose='', meetup_group_urlname='',
-                 facebook_app_id='', twitter_handle=''):
-        self.name = name
-        self.logo_url = logo_url
-        self.purpose = purpose
-        self.meetup_group_urlname = meetup_group_urlname
-        self.facebook_app_id = facebook_app_id
-        self.twitter_handle = twitter_handle
-
+    def __init__(self):
         self.registered_on = datetime.utcnow()
 
     def __repr__(self):
-        return '<Tribe %r>' % self.name
+        return '<Tribe %d|%r>' % (self.id, self.name)
+
+
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tribe_id = db.Column(db.Integer, db.ForeignKey('tribe.id'))
+    url = db.Column(db.String(512))
+
+    tribe = db.relationship('Tribe', backref=db.backref('photos', lazy='dynamic'))
+
+    def __repr__(self):
+        return '<Photo %d|%r>' % (self.id, self.url)
+
+
+class Testimonial(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tribe_id = db.Column(db.Integer, db.ForeignKey('tribe.id'))
+    endorser_name = db.Column(db.String(64))
+    testimonial_text = db.Column(db.String(512))
+    picture_url = db.Column(db.String(512))
+
+    tribe = db.relationship('Tribe', backref=db.backref('testimonials', lazy='dynamic'))
+
+    def __repr__(self):
+        return '<Testimonial %d|%r|%r|%d>' % (self.id, self.testimonial_text, self.endorser_name, self.tribe_id)
