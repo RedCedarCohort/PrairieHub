@@ -62,7 +62,7 @@ def load_api(app):
         'tribes.youtube_channel_name', 'featured_video_embed_url'])
 
     manager.create_api(models.Tribe, methods=['GET', 'POST', 'PUT'], exclude_columns=[
-        'members.password', 'members.registered_on', 'photos.tribe_id', 'press.tribe_id'])
+        'members.password', 'members.registered_on', 'photos.tribe_id', 'press.tribe_id', 'testimonials.tribe_id'])
 
     manager.create_api(models.Photo, methods=['GET', 'POST', 'PUT', 'DELETE'], exclude_columns=['tribe'])
     manager.create_api(models.Press, methods=['GET', 'POST', 'PUT', 'DELETE'], exclude_columns=['tribe'])

@@ -1,4 +1,3 @@
-from flask.ext.superadmin import model
 from datetime import datetime
 from flask import current_app
 from ..extensions import db
